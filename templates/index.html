@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Определитель фишинга</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Определитель фишинга</h1>
+    <p>Введите содержимое письма:</p>
+    <textarea type="text" id="input-text_area" name="input_text" rows="4"></textarea>
+    <button onclick="getResult()">Определить</button>
+    <p id="result"></p>
+    <script>
+    function getResult() {
+      var input_text = document.getElementById("input-text_area").value;
+      fetch('/process_text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'input_text': input_text
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        var result = data['result'];
+        var result_element = document.getElementById('result');
+        result_element.innerHTML = 'Результат: ' + result;
+      });
+    }
+
+    const inputElement = document.querySelector('input');
+
+    inputElement.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      inputElement.value += '\n';
+    }
+    });
+    </script>
+</body>
+</html>
