@@ -8,9 +8,13 @@
 <body>
     <h1>Определитель фишинга</h1>
     <p>Введите содержимое письма:</p>
+    <form>
     <textarea type="text" id="input-text_area" name="input_text" rows="4"></textarea>
-    <button onclick="getResult()">Определить</button>
+    <button type="reset" value="Reset" style="background-color: red" class="inline">Очистить</button>
+    </form>
+    <button onclick="getResult()" class="inline">Определить</button>
     <p id="result"></p>
+
     <script>
     function getResult() {
       var input_text = document.getElementById("input-text_area").value;

@@ -40,3 +40,7 @@ button:hover {
 #result {
     margin-top: 20px;
 }
+.inline {
+   display:inline-block;
+   margin-right:5px;
+}
