@@ -7,41 +7,97 @@
 </head>
 <body>
     <h1>Определитель фишинга</h1>
-    <p>Введите содержимое письма:</p>
+    <input type="radio" name="processing_option" id="process_text" checked>
+    <label for="process_text">По содержимому</label>
+
+    <input type="radio" name="processing_option" id="process_header">
+    <label for="process_header">По заголовкам</label>
     <form>
+    <p>Введите содержимое письма:</p>
     <textarea type="text" id="input-text_area" name="input_text" rows="4"></textarea>
+
+    <div id="additional-fields" style="display: none;">
+        <p>Введите email ID:</p>
+        <input type="text" id="email_id">
+
+        <p>Введите количество вложений:</p>
+        <input type="number" id="attachment_count">
+    </div>
+
+
     <button type="reset" value="Reset" style="background-color: red" class="inline">Очистить</button>
     </form>
-    <button onclick="getResult()" class="inline">Определить</button>
+    <button onclick="getResult()">Определить</button>
     <p id="result"></p>
 
     <script>
     function getResult() {
-      var input_text = document.getElementById("input-text_area").value;
-      fetch('/process_text', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          'input_text': input_text
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        var result = data['result'];
-        var result_element = document.getElementById('result');
-        result_element.innerHTML = 'Результат: ' + result;
-      });
+        var input_text = document.getElementById("input-text_area").value;
+
+        var processingOption = document.querySelector('input[name="processing_option"]:checked').id;
+
+        if (processingOption === 'process_text') {
+            fetch('/process_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'input_text': input_text
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var result = data['result'];
+                var result_element = document.getElementById('result');
+                result_element.innerHTML = 'Результат: ' + result;
+            });
+        } else if (processingOption === 'process_header') {
+            var emailId = document.getElementById('email_id').value;
+            var attachmentCount = document.getElementById('attachment_count').value;
+
+            fetch('/process_header', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'input_text': input_text,
+                    'email_id': emailId,
+                    'attachment_count': attachmentCount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var result = data['result'];
+                var result_element = document.getElementById('result');
+                result_element.innerHTML = 'Результат: ' + result;
+            });
+        }
     }
 
     const inputElement = document.querySelector('input');
 
     inputElement.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      inputElement.value += '\n';
-    }
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            inputElement.value += '\n';
+        }
+    });
+
+    const radioButtons = document.querySelectorAll('input[name="processing_option"]');
+    const additionalFields = document.getElementById('additional-fields');
+    const resultElement = document.getElementById('result');
+
+    radioButtons.forEach(radioButton => {
+        radioButton.addEventListener('change', () => {
+            if (radioButton.id === 'process_header') {
+                additionalFields.style.display = 'block';
+            } else {
+                additionalFields.style.display = 'none';
+            }
+            resultElement.innerHTML = '';
+        });
     });
     </script>
 </body>
